@@ -1,0 +1,189 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+.app {
+  min-height: 100vh;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+/* Header */
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.header__title {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #f0f0f0;
+}
+
+.header__subtitle {
+  margin: 0.35rem 0 0;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+/* Input */
+.input-section {
+  margin-bottom: 2rem;
+}
+
+.input-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #aaa;
+}
+
+.input-textarea {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background: #1a1a1a;
+  color: #e8e8e8;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.input-textarea:focus {
+  border-color: #555;
+}
+
+.input-textarea::placeholder {
+  color: #555;
+}
+
+/* Buttons */
+.actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.btn {
+  flex: 1;
+  padding: 0.7rem 1.2rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s, opacity 0.15s;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn--primary {
+  background: #3b82f6;
+  color: #fff;
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: #2563eb;
+}
+
+.btn--secondary {
+  background: #2a2a2a;
+  color: #ccc;
+}
+
+.btn--secondary:hover {
+  background: #333;
+}
+
+/* Results */
+.results__count {
+  margin: 0 0 1rem;
+  font-size: 0.9rem;
+  color: #888;
+}
+
+.results__list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Video card */
+.video-card {
+  background: #1a1a1a;
+  border: 1px solid #2a2a2a;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.video-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid #2a2a2a;
+}
+
+.video-card__title {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #ddd;
+}
+
+.video-card__error {
+  font-size: 0.8rem;
+  color: #f87171;
+}
+
+.video-card__player-wrap {
+  position: relative;
+  background: #0d0d0d;
+}
+
+.video-card__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.85rem;
+  color: #666;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.video-card__player {
+  display: block;
+  width: 100%;
+  max-height: 70vh;
+  background: #000;
+}
+
+/* Mobile tweaks */
+@media (max-width: 480px) {
+  .app {
+    padding: 1rem 0.75rem 2.5rem;
+  }
+
+  .header__title {
+    font-size: 1.5rem;
+  }
+
+  .actions {
+    flex-direction: column;
+  }
+}
