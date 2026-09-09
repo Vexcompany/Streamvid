@@ -1,4 +1,3 @@
-```tsx
 import { useState, useCallback } from 'react'
 import { parseAndResolveUrls } from './utils/resolveVideo'
 import { fetchFeed, type Feed } from './utils/feed'
@@ -229,4 +228,3 @@ https://example.com/ANOTHER_ID`}
 }
 
 export default App
-```
