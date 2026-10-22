@@ -27,7 +27,8 @@ export function resolveVideoUrl(input: string): string | null {
   let url: URL
 
   try {
-    const withProtocol = /^https?:\\/\\//i.test(trimmed)
+    const lower = trimmed.toLowerCase()
+    const withProtocol = lower.startsWith('http://') || lower.startsWith('https://')
       ? trimmed
       : `https://${trimmed}`
 
@@ -50,11 +51,7 @@ export function resolveVideoUrl(input: string): string | null {
   const resolveProvider = PROVIDERS[hostname]
   if (!resolveProvider) return null
 
-  const segments = url.pathname
-    .replace(/^\\/+|\\/+$/g, '')
-    .split('/')
-    .filter(Boolean)
-
+  const segments = url.pathname.split('/').filter(Boolean)
   const id = segments[0]
   if (!id || !ID_PATTERN.test(id) || id.length < 3 || id.length > 64) {
     return null
@@ -68,7 +65,7 @@ export function parseAndResolveUrls(text: string): string[] {
   const seen = new Set<string>()
   const results: string[] = []
 
-  for (const line of text.split(/\\r?\\n/)) {
+  for (const line of text.split(/\r?\n/)) {
     const resolved = resolveVideoUrl(line)
     if (resolved && !seen.has(resolved)) {
       seen.add(resolved)
