@@ -5,9 +5,8 @@
  *   https://disiniiyaa.click/{ID} → https://cdn2.videy.co/{ID}.mp4
  *   https://asupanrare.com/{ID}   → https://cdn.asupanrare.com/videos/raw/{ID}.mp4
  *
- * Direct public MP4 links from the ACEIMG CDN are also accepted. The resolver
- * intentionally does not guess ACEIMG URL patterns for wrapper IDs: use a
- * verified direct URL until the provider's URL format is confirmed.
+ * Direct public MP4 links from the ACEIMG CDN are also accepted. We do not
+ * guess ACEIMG URL patterns for wrapper IDs until the provider format is verified.
  */
 const ID_PATTERN = /^[A-Za-z0-9]+$/
 const PROVIDERS: Record<string, (id: string) => string> = {
@@ -21,7 +20,10 @@ export function resolveVideoUrl(input: string): string | null {
   if (!trimmed) return null
   let url: URL
   try {
-    url = new URL(/^https?:\\/\\//i.test(trimmed) ? trimmed : `https://${trimmed}`)
+    const withProtocol = trimmed.startsWith('http://') || trimmed.startsWith('https://')
+      ? trimmed
+      : `https://${trimmed}`
+    url = new URL(withProtocol)
   } catch {
     return null
   }
@@ -34,7 +36,7 @@ export function resolveVideoUrl(input: string): string | null {
 
   const resolveProvider = PROVIDERS[hostname]
   if (!resolveProvider) return null
-  const segments = url.pathname.replace(/^\\/+|\\/+$/g, '').split('/').filter(Boolean)
+  const segments = url.pathname.split('/').filter(Boolean)
   const id = segments[0]
   if (!id || !ID_PATTERN.test(id) || id.length < 3 || id.length > 64) return null
   return resolveProvider(id)
@@ -43,7 +45,7 @@ export function resolveVideoUrl(input: string): string | null {
 export function parseAndResolveUrls(text: string): string[] {
   const seen = new Set<string>()
   const results: string[] = []
-  for (const line of text.split(/\\r?\\n/)) {
+  for (const line of text.split(/\r?\n/)) {
     const resolved = resolveVideoUrl(line)
     if (resolved && !seen.has(resolved)) {
       seen.add(resolved)
