@@ -1,12 +1,13 @@
 /**
- * Resolve a public video-wrapper URL to its corresponding CDN MP4 URL.
+ * Resolve public video-wrapper URLs to directly accessible MP4 URLs.
  *
- * Supported wrapper providers:
- *   https://disiniiyaa.click/{ID}  →  https://cdn2.videy.co/{ID}.mp4
- *   https://asupanrare.com/{ID}    →  https://cdn.asupanrare.com/videos/raw/{ID}.mp4
+ * Supported wrappers:
+ *   https://disiniiyaa.click/{ID} -> https://cdn2.videy.co/{ID}.mp4
+ *   https://asupanrare.com/{ID}   -> https://cdn.asupanrare.com/videos/raw/{ID}.mp4
  *
- * Only known public wrapper domains are resolved. Query strings and trailing
- * slashes are tolerated.
+ * Direct public MP4 URLs on the ACEIMG CDN are accepted as-is. The
+ * short.gy URL's final destination has not been verified, so no guessed
+ * wrapper-ID mapping is applied for ACEIMG.
  */
 
 const ID_PATTERN = /^[A-Za-z0-9]+$/
@@ -17,10 +18,8 @@ const PROVIDERS: Record<string, (id: string) => string> = {
     `https://cdn.asupanrare.com/videos/raw/${id}.mp4`,
 }
 
-/**
- * Extract the first meaningful pathname segment from a supported wrapper URL
- * and return its resolved CDN MP4 URL, or null if the provider/ID is invalid.
- */
+const DIRECT_VIDEO_HOSTS = new Set(['cdn.aceimg.com'])
+
 export function resolveVideoUrl(input: string): string | null {
   const trimmed = input.trim()
   if (!trimmed) return null
@@ -28,8 +27,8 @@ export function resolveVideoUrl(input: string): string | null {
   let url: URL
 
   try {
-    // Ensure we have a protocol so URL() parses correctly.
-    const withProtocol = /^https?:\/\//i.test(trimmed)
+    const lower = trimmed.toLowerCase()
+    const withProtocol = lower.startsWith('http://') || lower.startsWith('https://')
       ? trimmed
       : `https://${trimmed}`
 
@@ -38,38 +37,35 @@ export function resolveVideoUrl(input: string): string | null {
     return null
   }
 
-  const hostname = url.hostname.toLowerCase()
-  const resolveProvider = PROVIDERS[hostname]
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') return null
 
+  const hostname = url.hostname.toLowerCase()
+
+  if (
+    DIRECT_VIDEO_HOSTS.has(hostname) &&
+    url.pathname.toLowerCase().endsWith('.mp4')
+  ) {
+    return url.toString()
+  }
+
+  const resolveProvider = PROVIDERS[hostname]
   if (!resolveProvider) return null
 
-  const segments = url.pathname
-    .replace(/^\/+|\/+$/g, '')
-    .split('/')
-    .filter(Boolean)
-
-  if (segments.length === 0) return null
-
+  const segments = url.pathname.split('/').filter(Boolean)
   const id = segments[0]
-
-  // Reject obviously invalid IDs.
-  if (!ID_PATTERN.test(id) || id.length < 3 || id.length > 64) {
+  if (!id || !ID_PATTERN.test(id) || id.length < 3 || id.length > 64) {
     return null
   }
 
   return resolveProvider(id)
 }
 
-/**
- * Parse a multi-line textarea value into unique resolved video URLs.
- * Empty lines and unsupported/invalid entries are skipped.
- */
+/** Parse newline-separated links, skipping invalid entries and duplicates. */
 export function parseAndResolveUrls(text: string): string[] {
-  const lines = text.split(/\r?\n/)
   const seen = new Set<string>()
   const results: string[] = []
 
-  for (const line of lines) {
+  for (const line of text.split(/\r?\n/)) {
     const resolved = resolveVideoUrl(line)
     if (resolved && !seen.has(resolved)) {
       seen.add(resolved)
