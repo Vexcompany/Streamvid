@@ -4,8 +4,12 @@
  * Supported wrappers:
  *   https://disiniiyaa.click/{ID} -> https://cdn2.videy.co/{ID}.mp4
  *   https://iniboskuu.click/{ID}   -> https://cdn2.videy.co/{ID}.mp4
+ *   https://uxjjrr.short.gy/{ID}   -> https://cdn2.videy.co/{ID}.mp4
  *   https://asupanrare.com/{ID}   -> https://cdn.asupanrare.com/videos/raw/{ID}.mp4
  *
+ * The short.gy alias is resolved locally because browser-side redirect
+ * inspection is blocked by cross-origin restrictions. Its path ID is the
+ * same ID used by the iniboskuu.click destination.
  * Direct public MP4 URLs on the ACEIMG CDN are accepted as-is.
  */
 
@@ -14,6 +18,7 @@ const ID_PATTERN = /^[A-Za-z0-9]+$/
 const PROVIDERS: Record<string, (id: string) => string> = {
   'disiniiyaa.click': (id) => `https://cdn2.videy.co/${id}.mp4`,
   'iniboskuu.click': (id) => `https://cdn2.videy.co/${id}.mp4`,
+  'uxjjrr.short.gy': (id) => `https://cdn2.videy.co/${id}.mp4`,
   'asupanrare.com': (id) =>
     `https://cdn.asupanrare.com/videos/raw/${id}.mp4`,
 }
