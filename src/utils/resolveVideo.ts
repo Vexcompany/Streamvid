@@ -3,17 +3,17 @@
  *
  * Supported wrappers:
  *   https://disiniiyaa.click/{ID} -> https://cdn2.videy.co/{ID}.mp4
+ *   https://iniboskuu.click/{ID}   -> https://cdn2.videy.co/{ID}.mp4
  *   https://asupanrare.com/{ID}   -> https://cdn.asupanrare.com/videos/raw/{ID}.mp4
  *
- * Direct public MP4 URLs on the ACEIMG CDN are accepted as-is. The
- * short.gy URL's final destination has not been verified, so no guessed
- * wrapper-ID mapping is applied for ACEIMG.
+ * Direct public MP4 URLs on the ACEIMG CDN are accepted as-is.
  */
 
 const ID_PATTERN = /^[A-Za-z0-9]+$/
 
 const PROVIDERS: Record<string, (id: string) => string> = {
   'disiniiyaa.click': (id) => `https://cdn2.videy.co/${id}.mp4`,
+  'iniboskuu.click': (id) => `https://cdn2.videy.co/${id}.mp4`,
   'asupanrare.com': (id) =>
     `https://cdn.asupanrare.com/videos/raw/${id}.mp4`,
 }
@@ -25,13 +25,10 @@ export function resolveVideoUrl(input: string): string | null {
   if (!trimmed) return null
 
   let url: URL
-
   try {
-    const lower = trimmed.toLowerCase()
-    const withProtocol = lower.startsWith('http://') || lower.startsWith('https://')
+    const withProtocol = /^https?:\/\//i.test(trimmed)
       ? trimmed
       : `https://${trimmed}`
-
     url = new URL(withProtocol)
   } catch {
     return null
